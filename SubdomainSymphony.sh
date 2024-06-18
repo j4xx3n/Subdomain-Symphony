@@ -13,7 +13,7 @@ show_help() {
   echo "A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques."
   echo
   echo "Usage:"
-  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f] [-c] -o ~/example"
+  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f] [-c] -o ~/example/"
   echo
   echo "Options:"
   echo "  -d    Specify the target domain"
@@ -80,10 +80,10 @@ fi
 # Scan with all passive tools and add to file
 passiveScan() {
   # Run sublist3r and add to a file.
-  sublist3r -d "$domain" -o $output/subdomains &&
+  sublist3r -d "$domain" -o "$output"subdomains &&
 
   # Run subfinder and add to a file.
-  subfinder -d "$domain" | tee -a $output/subdomains &&
+  subfinder -d "$domain" | tee -a "$output"subdomains &&
 
   # Get subdoamins form crt.sh
   echo "
@@ -96,7 +96,7 @@ passiveScan() {
   "
   echo -e "${RED}Checking crt.sh${NC}"
   echo
-  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a $output/subdomains &&
+  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a "$output"subdomains &&
 
   # Wait for all processes to finish
   wait
@@ -115,6 +115,7 @@ fuzzScan() {
   # Fuzz for subdomains with ffuf
   ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o $output/fuzz
 }
+
 
 # Function to clean and combine results
 cleanList() {
