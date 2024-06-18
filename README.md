@@ -1,4 +1,4 @@
-# Subdomain-Symphony
+# Subdomain Symphony
  A script to orchestrate subdomain discovery using passive and active techniques.
 
 ## Kali Linux Installation Steps
