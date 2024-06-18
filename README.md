@@ -29,11 +29,11 @@ Follow these steps to set up the project:
   `./SubdomainSymphony.sh -d <domain> [-p] [-a] [-c]`
 
 Options:
-  -d    Specify the target domain
-  -p    Enable passive scanning
-  -a    Enable active scanning
-  -c    Clean subdomain list
-  -h    Show this help message and exit
+  >-d    Specify the target domain
+  >-p    Enable passive scanning
+  >-a    Enable active scanning
+  >-c    Clean subdomain list
+  >-h    Show this help message and exit
 
 Example:
   `./SubdomainSymphony.sh -d example.com -p -a -c`
