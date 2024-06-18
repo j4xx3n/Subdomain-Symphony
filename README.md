@@ -25,7 +25,7 @@ Follow these steps to set up the project:
     ./kali-installer.sh
     ```
 
-##Usage
+## Usage
   `./SubdomainSymphony.sh -d <domain> [-p] [-a] [-c]`
 
 Options:
