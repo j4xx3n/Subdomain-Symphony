@@ -13,18 +13,17 @@ showHelp() {
   echo "A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques."
   echo
   echo "Usage:"
-  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f] [-c] -o ~/example/"
+  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-c] -o ~/example/"
   echo
   echo "Options:"
   echo "  -d    Specify the target domain"
   echo "  -a    Enable active scanning with amass"
-  echo "  -f    Enable fuzzing for subdomains with ffuf"
   echo "  -c    Clean subdomain list with sort and httpx"
   echo "  -o    Output file"
   echo "  -h    Show this help message and exit"
   echo
   echo "Example:"
-  echo "  ./SubdomainSymphony.sh -d example.com -a -f -c -o ~/example"
+  echo "  ./SubdomainSymphony.sh -d example.com -a -c -o ~/example"
 }
 
 # Create variable for target domain, active and fuzz options
