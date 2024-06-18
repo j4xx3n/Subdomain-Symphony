@@ -13,25 +13,29 @@ show_help() {
   echo "A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques."
   echo
   echo "Usage:"
-  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f]"
+  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f] [-c] -o ~/example/"
   echo
   echo "Options:"
   echo "  -d    Specify the target domain"
   echo "  -a    Enable active scanning with amass"
   echo "  -f    Enable fuzzing for subdomains with ffuf"
+  echo "  -c    Clean subdomain list with sort and httpx"
+  echo "  -o    Output file"
   echo "  -h    Show this help message and exit"
   echo
   echo "Example:"
-  echo "  ./SubdomainSymphony.sh -d example.com -a -f"
+  echo "  ./SubdomainSymphony.sh -d example.com -a -f -c -o ~/example"
 }
 
 # Create variable for target domain, active and fuzz options
 domain=""
 active=false
 fuzz=false
+clean=false
+output=""
 
 # Parse command-line options
-while getopts ":d:afh" opt; do
+while getopts ":d:afcoh" opt; do
   case ${opt} in
     d )
       domain="$OPTARG"
@@ -41,6 +45,12 @@ while getopts ":d:afh" opt; do
       ;;
     f )
       fuzz=true
+      ;;
+    c )
+      clean=true
+      ;;
+    o )
+      output="$OPTARG"
       ;;
     h )
       show_help
@@ -70,10 +80,10 @@ fi
 # Scan with all passive tools and add to file
 passiveScan() {
   # Run sublist3r and add to a file.
-  sublist3r -d "$domain" -o bigDomain &&
+  sublist3r -d "$domain" -o $output/subdomains &&
 
   # Run subfinder and add to a file.
-  subfinder -d "$domain" | tee -a bigDomain &&
+  subfinder -d "$domain" | tee -a $output/subdomains &&
 
   # Get subdoamins form crt.sh
   echo "
@@ -86,7 +96,7 @@ passiveScan() {
   "
   echo -e "${RED}Checking crt.sh${NC}"
   echo
-  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a bigDomain &&
+  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a $output/subdomains &&
 
   # Wait for all processes to finish
   wait
@@ -96,22 +106,20 @@ passiveScan() {
 # Scan with all active tools and add to file
 activeScan() {
   # Run amass and add to a file.
-  amass enum -d "$domain" | tee -a bigDomain
+  amass enum -d "$domain" | tee -a $output/subdomains
 }
 
 
 # Fuzz with ffuf and add to file
 fuzzScan() {
   # Fuzz for subdomains with ffuf
-  ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o fuzz
+  ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o $output/fuzz
 }
 
 # Function to clean and combine results
-clean() {
-  cat bigDomain >> subdomains
-  [ -f fuzz ] && cat fuzz >> subdomains
+cleanList() {
   sort -u subdomains -o subdomains
-  cat subdomains | httpx | tee subdomains
+  cat subdomains | httpx-toolkit | tee $output/subdomains
 }
 
 
@@ -127,7 +135,9 @@ main() {
     fuzzScan
   fi
 
-  #clean
+  if [ "$clean" = true ]; then
+    cleanList
+  fi
 }
 
 main
