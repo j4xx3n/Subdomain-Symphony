@@ -1,5 +1,5 @@
 # Subdomain-Symphony
- A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.
+ A script to orchestrate subdomain discovery using passive and active techniques.
 
 ## Installation Steps
 
