@@ -3,27 +3,37 @@
 # Subdomain Symphony
 # A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.
 
+
 # ANSI color codes
 RED='\033[0;31m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+echo
+echo -e "${RED}Subdomain Symphony${NC}"
+#echo -e "${BLUE}A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.${NC}"
+echo -e "${BLUE}By:J4xx3n${NC}"
+
 
 # Function to display help message
 showHelp() {
-  echo "Subdomain Symphony"
-  echo "A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques."
   echo
-  echo "Usage:"
-  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-c] -o ~/example/"
+  echo -e "${RED}Subdomain Symphony${NC}"
+  echo -e "${BLUE}A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.${NC}"
+  echo -e "${RED}By:J4xx3n${NC}"
   echo
-  echo "Options:"
+  echo -e "${BLUE}Usage:${NC}"
+  echo "  ./SubdomainSymphony.sh -d <domain> [-p] [-a] [-c]"
+  echo
+  echo -e "${BLUE}Options:${NC}"
   echo "  -d    Specify the target domain"
-  echo "  -a    Enable active scanning with amass"
-  echo "  -c    Clean subdomain list with sort and httpx"
-  echo "  -o    Output file"
+  echo "  -p    Enable passive scanning"
+  echo "  -a    Enable active scanning"
+  echo "  -c    Clean subdomain list"
   echo "  -h    Show this help message and exit"
   echo
-  echo "Example:"
-  echo "  ./SubdomainSymphony.sh -d example.com -a -c -o ~/example"
+  echo -e "${BLUE}Example:${NC}"
+  echo "  ./SubdomainSymphony.sh -d example.com -p -a -c"
 }
 
 # Create variable for target domain, active and fuzz options
@@ -31,10 +41,9 @@ domain=""
 passive=false
 active=false
 clean=false
-output=""
 
 # Parse command-line options
-while getopts ":d:pacoh" opt; do
+while getopts ":d:pach" opt; do
   case ${opt} in
     d )
       domain="$OPTARG"
@@ -47,9 +56,6 @@ while getopts ":d:pacoh" opt; do
       ;;
     c )
       clean=true
-      ;;
-    o )
-      output="$OPTARG"
       ;;
     h )
       showHelp
@@ -78,13 +84,14 @@ fi
 
 # Scan with all passive tools and add to file
 passiveScan() {
-  # Run subfinder and add to a file.
-  subfinder -d "$domain" | tee -a "$output"subdomains &&
-
-  assetfinder -subs-only $domain | tee -a "$output"subdomains &&
-
   # Run sublist3r and add to a file.
-  sublist3r -d "$domain" -o "$output"subdomains &&
+  sublist3r -d "$domain" -o subdomains &&
+
+  # Run subfinder and add to a file.
+  subfinder -d "$domain" | tee -a subdomains &&
+
+  # Run assetfinder and add to a file.
+  assetfinder -subs-only $domain | tee -a subdomains &&
 
   # Wait for all processes to finish
   wait
@@ -94,18 +101,18 @@ passiveScan() {
 # Scan with all active tools and add to file
 activeScan() {
   # Run amass and add to a file.
-  amass enum -d cat.com | cut -d ' ' -f1  | sort -u | tee -a $output/subdomains
+  #amass enum -d cat.com | tee amass
 
-  # Fuzz for subdomains with ffuf
-  ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o $output/fuzz
+  # Fuzz for subdomains with ffuf and add json to file
+  ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o fuzz.json
+  jq -r '.results[].url' fuzz.json | tee subdomains  # Parse subdomains from ffuf json file
 }
-
 
 
 # Function to clean and combine results
 cleanList() {
   sort -u subdomains -o subdomains
-  cat subdomains | httpx-toolkit | tee $output/subdomains
+  cat subdomains | httpx-toolkit | tee subdomains
 }
 
 
