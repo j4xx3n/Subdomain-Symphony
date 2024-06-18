@@ -79,9 +79,6 @@ fi
 
 # Scan with all passive tools and add to file
 passiveScan() {
-  # Run sublist3r and add to a file.
-  sublist3r -d "$domain" -o "$output"subdomains &&
-
   # Run subfinder and add to a file.
   subfinder -d "$domain" | tee -a "$output"subdomains &&
 
@@ -106,7 +103,10 @@ passiveScan() {
 # Scan with all active tools and add to file
 activeScan() {
   # Run amass and add to a file.
-  amass enum -d "$domain" | tee -a $output/subdomains
+  #amass enum -d "$domain" | tee -a $output/subdomains
+
+  # Run sublist3r and add to a file.
+  sublist3r -d "$domain" -o "$output"subdomains &&
 }
 
 
