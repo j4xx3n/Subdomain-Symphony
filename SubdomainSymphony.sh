@@ -112,8 +112,6 @@ cleanList() {
 
 # Main function to call other functions
 main() {
-  passiveScan
-
   if [ "$passive" = true ]; then
     passiveScan
   fi
