@@ -29,22 +29,22 @@ showHelp() {
 
 # Create variable for target domain, active and fuzz options
 domain=""
+passive=false
 active=false
-fuzz=false
 clean=false
 output=""
 
 # Parse command-line options
-while getopts ":d:afcoh" opt; do
+while getopts ":d:pacoh" opt; do
   case ${opt} in
     d )
       domain="$OPTARG"
       ;;
+    p )
+      passive=true
+      ;;
     a )
       active=true
-      ;;
-    f )
-      fuzz=true
       ;;
     c )
       clean=true
@@ -82,6 +82,11 @@ passiveScan() {
   # Run subfinder and add to a file.
   subfinder -d "$domain" | tee -a "$output"subdomains &&
 
+  assetfinder -subs-only $domain | tee -a "$output"subdomains &&
+
+  # Run sublist3r and add to a file.
+  sublist3r -d "$domain" -o "$output"subdomains &&
+
   # Get subdoamins form crt.sh
   echo "
             _         _     
@@ -103,18 +108,12 @@ passiveScan() {
 # Scan with all active tools and add to file
 activeScan() {
   # Run amass and add to a file.
-  #amass enum -d "$domain" | tee -a $output/subdomains
+  amass enum -d cat.com | cut -d ' ' -f1  | sort -u | tee -a $output/subdomains
 
-  # Run sublist3r and add to a file.
-  sublist3r -d "$domain" -o "$output"subdomains &&
-}
-
-
-# Fuzz with ffuf and add to file
-fuzzScan() {
   # Fuzz for subdomains with ffuf
   ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o $output/fuzz
 }
+
 
 
 # Function to clean and combine results
@@ -128,12 +127,12 @@ cleanList() {
 main() {
   passiveScan
 
-  if [ "$active" = true ]; then
-    activeScan
+  if [ "$passive" = true ]; then
+    passiveScan
   fi
 
-  if [ "$fuzz" = true ]; then
-    fuzzScan
+  if [ "$active" = true ]; then
+    activeScan
   fi
 
   if [ "$clean" = true ]; then
