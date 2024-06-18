@@ -82,7 +82,7 @@ active() {
 # Fuzz with ffuf and add to file
 fuzz() {
   # Fuzz for subdomains with ffuf
-  ffuf -w fuzzLists/subdomains-top1million-5000.txt -u FUZZ.$domain | tee fuzz
+  ffuf -w subdomains-top1million-5000.txt -u FUZZ.$domain | tee fuzz
 }
 
 # Function to clean and combine results
