@@ -3,6 +3,9 @@
 # Subdomain Symphony
 # A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.
 
+# ANSI color codes
+RED='\033[0;31m'
+NC='\033[0m' # No Color
 
 # Function to display help message
 show_help() {
@@ -21,6 +24,11 @@ show_help() {
   echo "Example:"
   echo "  ./SubdomainSymphony.sh -d example.com -a -f"
 }
+
+# Create variable for target domain, active and fuzz options
+domain=""
+active=false
+fuzz=false
 
 # Parse command-line options
 while getopts ":d:afh" opt; do
@@ -52,37 +60,50 @@ while getopts ":d:afh" opt; do
 done
 shift $((OPTIND -1))
 
-# Create variable for target domain, active and fuzz options
-domain=""
-active=false
-fuzz=false
+# Check if domain is provided
+if [ -z "$domain" ]; then
+  echo "Error: Domain is required."
+  show_help
+  exit 1
+fi
 
 # Scan with all passive tools and add to file
-passive() {
-  # Run subfinder and add to a file.
-  subfinder -d "$domain" | tee -a bigDomain &
-
+passiveScan() {
   # Run sublist3r and add to a file.
-  python sublist3r.py -d "$domain" | tee -a bigDomain & 
+  sublist3r -d "$domain" -o bigDomain &&
+
+  # Run subfinder and add to a file.
+  subfinder -d "$domain" | tee -a bigDomain &&
 
   # Get subdoamins form crt.sh
-  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a bigDomain &
+  echo "
+            _         _     
+   ___ _ __| |_   ___| |__  
+  / __| '__| __| / __| '_ \ 
+ | (__| |  | |_ _\__ \ | | |
+  \___|_|   \__(_)___/_| |_|
+
+  "
+  echo -e "${RED}Checking crt.sh${NC}"
+  echo
+  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a bigDomain &&
 
   # Wait for all processes to finish
   wait
 }
 
+
 # Scan with all active tools and add to file
-active() {
+activeScan() {
   # Run amass and add to a file.
   amass enum -d "$domain" | tee -a bigDomain
 }
 
 
 # Fuzz with ffuf and add to file
-fuzz() {
+fuzzScan() {
   # Fuzz for subdomains with ffuf
-  ffuf -w subdomains-top1million-5000.txt -u FUZZ.$domain | tee fuzz
+  ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o fuzz
 }
 
 # Function to clean and combine results
@@ -90,23 +111,23 @@ clean() {
   cat bigDomain >> subdomains
   [ -f fuzz ] && cat fuzz >> subdomains
   sort -u subdomains -o subdomains
-  cat subdomains | httpx | httprobe | tee subdomains
+  cat subdomains | httpx | tee subdomains
 }
 
 
 # Main function to call other functions
 main() {
-  passive
-  
+  passiveScan
+
   if [ "$active" = true ]; then
-    active
+    activeScan
   fi
 
   if [ "$fuzz" = true ]; then
-    fuzz
+    fuzzScan
   fi
 
-  clean
+  #clean
 }
 
 main
