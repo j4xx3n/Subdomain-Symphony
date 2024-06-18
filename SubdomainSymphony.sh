@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Subdomain Symphony
-# A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.
+# A script to orchestrate subdomain discovery using passive and active techniques.
 
 
 # ANSI color codes
@@ -11,7 +11,7 @@ NC='\033[0m' # No Color
 
 echo
 echo -e "${RED}Subdomain Symphony${NC}"
-#echo -e "${BLUE}A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.${NC}"
+#echo -e "${BLUE}A script to orchestrate subdomain discovery using passive and active techniques.${NC}"
 echo -e "${BLUE}By:J4xx3n${NC}"
 
 
@@ -19,7 +19,7 @@ echo -e "${BLUE}By:J4xx3n${NC}"
 showHelp() {
   echo
   echo -e "${RED}Subdomain Symphony${NC}"
-  echo -e "${BLUE}A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques.${NC}"
+  echo -e "${BLUE} A script to orchestrate subdomain discovery using passive and active techniques.${NC}"
   echo -e "${RED}By:J4xx3n${NC}"
   echo
   echo -e "${BLUE}Usage:${NC}"
