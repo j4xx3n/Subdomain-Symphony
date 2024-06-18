@@ -8,7 +8,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Function to display help message
-show_help() {
+showHelp() {
   echo "Subdomain Symphony"
   echo "A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques."
   echo
@@ -53,7 +53,7 @@ while getopts ":d:afcoh" opt; do
       output="$OPTARG"
       ;;
     h )
-      show_help
+      showHelp
       exit 0
       ;;
     \? )
@@ -73,7 +73,7 @@ shift $((OPTIND -1))
 # Check if domain is provided
 if [ -z "$domain" ]; then
   echo "Error: Domain is required."
-  show_help
+  showHelp
   exit 1
 fi
 
