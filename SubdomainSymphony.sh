@@ -13,7 +13,7 @@ show_help() {
   echo "A script to orchestrate subdomain discovery using passive, active, and fuzzing techniques."
   echo
   echo "Usage:"
-  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f] [-c] -o ~/example/"
+  echo "  ./SubdomainSymphony.sh -d <domain> [-a] [-f] [-c] -o ~/example"
   echo
   echo "Options:"
   echo "  -d    Specify the target domain"
