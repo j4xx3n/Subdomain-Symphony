@@ -9,18 +9,12 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo
-echo -e "${RED}Subdomain Symphony${NC}"
-#echo -e "${BLUE}A script to orchestrate subdomain discovery using passive and active techniques.${NC}"
-echo -e "${BLUE}By:J4xx3n${NC}"
-
-
 # Function to display help message
 showHelp() {
   echo
   echo -e "${RED}Subdomain Symphony${NC}"
   echo -e "${BLUE} A script to orchestrate subdomain discovery using passive and active techniques.${NC}"
-  echo -e "${RED}By:J4xx3n${NC}"
+  echo -e "${RED}By: J4xx3n${NC}"
   echo
   echo -e "${BLUE}Usage:${NC}"
   echo "  ./SubdomainSymphony.sh -d <domain> [-p] [-a] [-c]"
@@ -84,6 +78,10 @@ fi
 
 # Scan with all passive tools and add to file
 passiveScan() {
+  echo
+  echo -e "${RED}Subdomain Symphony${NC}"
+  echo -e "${BLUE}Starting passive scan...${NC}"
+
   # Run sublist3r and add to a file.
   sublist3r -d "$domain" -o subdomains &&
 
@@ -100,6 +98,10 @@ passiveScan() {
 
 # Scan with all active tools and add to file
 activeScan() {
+  echo
+  echo -e "${RED}Subdomain Symphony${NC}"
+  echo -e "${BLUE}Starting active scan...${NC}"
+
   # Run amass and add to a file.
   #amass enum -d cat.com | tee amass
 
