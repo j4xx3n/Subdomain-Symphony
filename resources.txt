@@ -1,0 +1,5 @@
+https://0xffsec.com/handbook/information-gathering/subdomain-enumeration/#brute-force-enumeration
+
+https://github.com/appsecco/the-art-of-subdomain-enumeration
+
+https://securitytrails.com/blog/subdomain-scanner-find-subdomains
