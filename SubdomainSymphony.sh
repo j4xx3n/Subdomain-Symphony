@@ -87,19 +87,6 @@ passiveScan() {
   # Run sublist3r and add to a file.
   sublist3r -d "$domain" -o "$output"subdomains &&
 
-  # Get subdoamins form crt.sh
-  echo "
-            _         _     
-   ___ _ __| |_   ___| |__  
-  / __| '__| __| / __| '_ \ 
- | (__| |  | |_ _\__ \ | | |
-  \___|_|   \__(_)___/_| |_|
-
-  "
-  echo -e "${RED}Checking crt.sh${NC}"
-  echo
-  curl -s "https://crt.sh/?q=$domain&output=json" | jq -r '.[].common_name' | sed 's/*.//g' | sort -u | grep $domain | tee -a "$output"subdomains &&
-
   # Wait for all processes to finish
   wait
 }
