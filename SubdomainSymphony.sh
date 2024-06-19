@@ -107,7 +107,7 @@ activeScan() {
 
   # Fuzz for subdomains with ffuf and add json to file
   ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o fuzz.json
-  jq -r '.results[].url' fuzz.json | tee subdomains  # Parse subdomains from ffuf json file
+  jq -r '.results[].url' fuzz.json | tee -a subdomains  # Parse subdomains from ffuf json file
 }
 
 
