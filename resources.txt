@@ -1,3 +1,5 @@
+https://www.thehacker.recipes/web/recon/directory-fuzzing
+
 https://0xffsec.com/handbook/information-gathering/subdomain-enumeration/#brute-force-enumeration
 
 https://github.com/appsecco/the-art-of-subdomain-enumeration
