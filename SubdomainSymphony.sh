@@ -32,15 +32,20 @@ showHelp() {
 
 # Create variable for target domain, active and fuzz options
 domain=""
+output="subdomain"
 passive=false
 active=false
 clean=false
+output="subdomain"
 
 # Parse command-line options
-while getopts ":d:pach" opt; do
+while getopts ":d:opach" opt; do
   case ${opt} in
     d )
       domain="$OPTARG"
+      ;;
+    o )
+      output="$OPTARG"
       ;;
     p )
       passive=true
@@ -83,13 +88,13 @@ passiveScan() {
   echo -e "${BLUE}Starting passive scan...${NC}"
 
   # Run sublist3r and add to a file.
-  sublist3r -d "$domain" -o subdomains &&
+  sublist3r -d "$domain" -o $output &&
 
   # Run subfinder and add to a file.
-  subfinder -d "$domain" | tee -a subdomains &&
+  subfinder -d "$domain" | tee -a $output &&
 
   # Run assetfinder and add to a file.
-  assetfinder -subs-only $domain | tee -a subdomains &&
+  assetfinder -subs-only $domain | tee -a $output &&
 
   # Wait for all processes to finish
   wait
@@ -107,15 +112,15 @@ activeScan() {
 
   # Fuzz for subdomains with ffuf and add json to file
   ffuf -w subdomains-top1million-5000.txt -u https://FUZZ.$domain -o fuzz.json
-  jq -r '.results[].url' fuzz.json | tee -a subdomains  # Parse subdomains from ffuf json file
+  jq -r '.results[].url' fuzz.json | tee -a $output  # Parse subdomains from ffuf json file
   rm -rf fuzz.json
 }
 
 
 # Function to clean and combine results
 cleanList() {
-  sort -u subdomains -o subdomains
-  cat subdomains | httpx-toolkit | tee subdomains
+  sort -u $output | tee $output
+  cat $output | httpx-toolkit | tee subdomains
 }
 
 
